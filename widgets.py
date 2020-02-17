@@ -57,12 +57,12 @@ class Widget(QWidget):
         main.download(path)
         main.version_file(self.latest)
         self.run_meter()
-        sys.exit(app.exec_())
+
 
     @Slot()
     def run_meter(self):
         print("runinng app")
-        sys.exit(app.exec_())
+        sys.exit(0)
 
 
     # Main Window
