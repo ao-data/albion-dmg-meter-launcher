@@ -39,12 +39,12 @@ class Widget(QWidget):
         if main.check_version(self.latest) == None:
             self.label1.setText("Click Download to update.")
             self.download.setEnabled(True)
-        elif main.check_version():
+        elif main.check_version(latest=self.latest):
             self.label1.setText("Ready to update.")
             self.download.setEnabled(True)
             self.run.setEnabled(True)
         else:
-            self.label1.setText("You've latest version.")
+            self.label1.setText("You've got latest version.")
             self.run.setEnabled(True)
 
     # Slots
