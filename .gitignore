@@ -7,3 +7,8 @@ env
 
 .vscode
 
+
+# project
+
+current_version.txt
+albion-online-stats-linux
