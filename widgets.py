@@ -3,19 +3,21 @@ import os
 from PySide2.QtCore import Slot
 from PySide2.QtWidgets import (QApplication, QHBoxLayout, QLabel, QMainWindow, QPushButton,QVBoxLayout, QWidget)
 import main
-
+import threading
+import subprocess
 
 class Widget(QWidget):
     def __init__(self):
         QWidget.__init__(self)
         self.items = 0
+        self.latest = main.latest_version()
 
-        # Create label
+        # Left
         self.right = QVBoxLayout()
         self.label1 = QLabel("Looking for updates...")
         self.right.addWidget(self.label1)
 
-        # Create buttons
+
         self.download = QPushButton("Download")
         self.run = QPushButton("Run")
         self.right.addWidget(self.download)
@@ -25,21 +27,22 @@ class Widget(QWidget):
 
         # QWidget Layout
         self.layout = QHBoxLayout()
+
+        # self.table_view.setSizePolicy(size)
         self.layout.addLayout(self.right)
 
         # Set the layout to the QWidget
         self.setLayout(self.layout)
 
-        # Signals
+        # Signals and Slots
         self.download.clicked.connect(self.download_latest)
         self.run.clicked.connect(self.run_meter)
 
-        # Check version to choose option
-        self.latest = main.latest_version()
+
         if main.check_version(self.latest) == None:
             self.label1.setText("Click Download to update.")
             self.download.setEnabled(True)
-        elif main.check_version():
+        elif main.check_version(self.latest):
             self.label1.setText("Ready to update.")
             self.download.setEnabled(True)
             self.run.setEnabled(True)
@@ -47,25 +50,33 @@ class Widget(QWidget):
             self.label1.setText("You've latest version.")
             self.run.setEnabled(True)
 
-    # Slots
+
     @Slot()
     def download_latest(self):
-        self.label1.setText('Downloading...please wait.')
+        Watek().start()
+        self.label1.setText("Downloading...")
         self.download.setEnabled(False)
         self.run.setEnabled(False)
-        path = os.path.join(os.getcwd(), 'albion-online-stats-linux')
-        main.download(path)
-        main.version_file(self.latest)
-        self.run_meter()
-        sys.exit(app.exec_())
 
     @Slot()
     def run_meter(self):
         print("runinng app")
-        sys.exit(app.exec_())
+        subprocess.Popen('./albion-online-stats-linux')
+        sys.exit(0)
 
 
-    # Main Window
+class Watek(threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+
+    def run(self):
+        path = os.path.join(os.getcwd(), 'albion-online-stats-linux')
+        main.download(path)
+        main.version_file(main.latest_version())
+        Widget().run_meter()
+        return 0
+
+
 class Window(QMainWindow):
     def __init__(self, widget):
         QMainWindow.__init__(self)
@@ -82,5 +93,7 @@ if __name__ == "__main__":
     window = Window(widget)
     window.resize(200, 100)
     window.show()
+
+
     # Execute application
     sys.exit(app.exec_())

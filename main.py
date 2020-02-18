@@ -46,3 +46,4 @@ def download(path):
 def version_file(version):
     with open('current_version.txt', 'w') as f:
         f.write(version)
+    return
